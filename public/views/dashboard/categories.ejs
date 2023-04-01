@@ -1,0 +1,589 @@
+<%- include("../includes/header") %>
+
+    <!--**********************************
+        Content body start
+    ***********************************-->
+    <div class="content-body">
+        <div class="container-fluid">
+            <div class="row page-titles mx-0">
+                <div class="col-sm-6 p-md-0">
+                    <div class="welcome-text">
+                        <h4>Categories</h4>
+                        <p class="mb-0">Your business dashboard template</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">App</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Categories</a></li>
+                    </ol>
+                </div>
+            </div>
+
+            <form id="adminControl">
+                <div id="feedback_msg"></div>
+                <div class="d-flex justify-content-between mb-2">
+                    <div>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                              <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link" id="vendors-tab" data-toggle="tab" href="#vendors" role="tab" aria-controls="vendors" aria-selected="false">Vendors</a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <a href="javascript:void(0)" class="btn btn-success mr-2" data-toggle="modal"
+                            data-target="#createModal">Create</a>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <div class="table-responsive">
+                            <table id="dataTable" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class=" pr-3">
+                                            <div class="custom-control custom-checkbox mx-2">
+                                                <input type="checkbox" class="custom-control-input" id="checkAll">
+                                                <label class="custom-control-label" for="checkAll"></label>
+                                            </div>
+                                        </th>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Date</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admins">
+        
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="vendors" role="tabpanel" aria-labelledby="vendors-tab">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class=" pr-3">
+                                            <div class="custom-control custom-checkbox mx-2">
+                                                <input type="checkbox" class="custom-control-input" id="checkAll">
+                                                <label class="custom-control-label" for="checkAll"></label>
+                                            </div>
+                                        </th>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Date</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vendorsTable">
+        
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+            </form>
+
+
+        </div>
+    </div>
+    <!--**********************************
+        Content body end
+    ***********************************-->
+
+    <div class="modal fade py-4" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered m-auto" role="document">
+            <div class="modal-content">
+                <form id="createCategory" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Create Category</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body py-3">
+                        <div id="feedback_msg"></div>
+                        <div class="form-group">
+                            <label for="">Title *</label>
+                            <input type="text" name="title" class="form-control" placeholder="Enter Title" />
+                        </div>
+
+                        <div class="form-group dropdown">
+                            <label for="">Subcategory</label>
+                            <select name="subcat_id" class="form-control loadCat">
+                                <option value="" disabled selected>--Select--</option>
+                            </select>
+                            <!-- <input type="hidden" name="subcat_id" value=""/>
+                            <input type="text" id="catq" class="form-control" onkeyup="search_cat_list()"
+                                placeholder="Enter Sub category" />
+                            <div class="dropdown-menu catlistnew" id="catList" aria-labelledby="dropdownMenuButton">
+                            </div> -->
+                        </div>
+                        <div class="form-group">
+                            <label for="">Description *</label>
+                            <textarea name="desc_text" class="form-control" rows="5"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminModal"></div>
+
+
+
+
+    <%- include("../includes/footer") %>
+
+
+
+    <script>
+
+        $(() => {
+
+            axios.get(`${process.env.CAT_API_ROUTE}categories`, {
+                headers: {
+                    'Authorization': '<%= user.login_token %>',
+                }
+            })
+                .then(response => {
+                    const { data } = response;
+
+
+                    if (data.error === 0) {
+                        if (data.categories.length > 0) {
+
+                            let html = '', adminModalHtml = '', categoriesHtml = '', vendorHtml = '';
+                            data.categories.reverse().forEach(category => {
+
+
+                                let subcategory = null;
+                                
+                                for (let index = 0; index < data.categories.length; index++) {
+                                    const element = data.categories[index];
+                                    if (category.subcat_id !== null && element.id === category.subcat_id) {
+                                        subcategory = element;
+                                        break;
+                                    }
+                                    
+                                }
+                                
+                                categoriesHtml += `
+                                    <option value="${category.id}">${category.title}</option>
+                                `;
+
+                                if (category.vendor_id !== null) {
+                                    vendorHtml += `
+                            <tr>
+                                <td class="py-2">
+                                    <div class="custom-control custom-checkbox mx-2">
+                                        <input type="checkbox" name="cat_nos" value="${category.cat_no}" class="custom-control-input" id="check${category.cat_no}">
+                                        <label class="custom-control-label" for="check${category.cat_no}"></label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-dark">
+                                        <i class="mdi mdi-store" aria-hidden="true"></i>
+                                        ${category.user.store_name}
+                                    </span>
+                                    <h5 class="font-weight-bold mb-0">${category.title}</h5>
+                                    <p class="ml-2 font-weight-bold mb-0" title="Subcategory">${subcategory === null ? '' : subcategory.title}</p>
+                                </td>
+                                <td>${category.desc_text === null ? '' : category.desc_text}</td>
+                                <td>${moment(category.updatedAt).format("LL")}</td>
+                                <td class="text-center">
+                                    <div class="dropdown">
+                                        <a href="javascript:void(0)" class="tp-btn-light sharp" data-toggle="dropdown" onclick="showAdminDropdown('admin${category.cat_no}')"><span class="fs--1"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18px" height="18px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg></span></a>
+                                        <div class="dropdown-menu border py-0 manipulateDrop" id="admin${category.cat_no}">
+                                            <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#adminModal${category.cat_no}" onclick="adminUpdateModal('${category.cat_no}')">View</a>`;
+
+                                            if (category.cat_status === 1) {
+                                        vendorHtml += `
+                                            <a class="dropdown-item" href="javascript:void(0)" onclick="vetCat('${category.cat_no}', 0)">Suspend</a>
+                                        `;
+                                            } else {
+                                        vendorHtml += `
+                                            <a class="dropdown-item text-success" href="javascript:void(0)" onclick="vetCat('${category.cat_no}', 1)">Activate</a>
+                                        `;
+                                            }
+
+                                        vendorHtml += `
+                                            <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="removeCat('${category.cat_no}')">Delete</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                                }
+                                else{
+                                    html += `
+                            <tr>
+                                <td class="py-2">
+                                    <div class="custom-control custom-checkbox mx-2">
+                                        <input type="checkbox" name="cat_nos" value="${category.cat_no}" class="custom-control-input" id="check${category.cat_no}">
+                                        <label class="custom-control-label" for="check${category.cat_no}"></label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <h5 class="font-weight-bold mb-0">${category.title}</h5>
+                                    <p class="ml-2 font-weight-bold mb-0" title="Subcategory">${subcategory === null ? '' : subcategory.title}</p>
+                                </td>
+                                <td>${category.desc_text === null ? '' : category.desc_text}</td>
+                                <td>${moment(category.updatedAt).format("LL")}</td>
+                                <td class="text-center">
+                                    <div class="dropdown">
+                                        <a href="javascript:void(0)" class="tp-btn-light sharp" data-toggle="dropdown" onclick="showAdminDropdown('admin${category.cat_no}')"><span class="fs--1"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18px" height="18px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg></span></a>
+                                        <div class="dropdown-menu border py-0 manipulateDrop" id="admin${category.cat_no}">
+                                            <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#adminModal${category.cat_no}" onclick="adminUpdateModal('${category.cat_no}')">View</a>`;
+
+                                if (category.cat_status === 1) {
+                                    html += `
+                                        <a class="dropdown-item" href="javascript:void(0)" onclick="vetCat('${category.cat_no}', 0)">Suspend</a>
+                                    `;
+                                } else {
+                                    html += `
+                                        <a class="dropdown-item text-success" href="javascript:void(0)" onclick="vetCat('${category.cat_no}', 1)">Activate</a>
+                                    `;
+                                }
+
+                                html += `
+                                            <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="removeCat('${category.cat_no}')">Delete</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                                }
+
+                                
+                                adminModalHtml += `
+                            <div class="modal fade py-4" id="adminModal${category.cat_no}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered m-auto" role="document">
+                                <div class="modal-content">
+                                    <form id="updateAdmin" method="post">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Update Category <span class="badge badge-dark">${category.title}</span></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <div class="modal-body py-3">
+                                            <div id="feedback_msg"></div>             
+                                            <div class="d-flex">
+                                                `;
+                                adminModalHtml += `
+                                                <div class="mt-2">
+                                                    <h4 class="mb-0">${category.title}</h4>  
+                                                    <p class="mb-0">${category.desc_text === null ? '' : category.desc_text}</p>
+                                                    <p class="mb-0">${category.desc_html === null ? '' : category.desc_html}</p>
+                                                    `
+                                if (category.cat_status === 1) {
+                                    adminModalHtml += `
+                                                            <small class="badge badge-success">Activated</small>
+                                                        `;
+                                } else {
+                                    adminModalHtml += `
+                                                            <small class="badge badge-danger">Suspended</small>
+                                                        `;
+                                }
+                                adminModalHtml += `
+                                                </div>
+                                            </div> `;
+
+                                            if (category.vendor_id !== null) {
+                                                adminModalHtml += `
+                                                    <div class="mt-3 border-top border-bottom py-2">
+                                                        <h5>
+                                                            <i class="mdi mdi-store" aria-hidden="true"></i>
+                                                            ${category.user.store_name} information
+                                                        </h5>
+                                                        <div class="row">
+                                                            <div class="col-3"><h5>Full Name</h5></div>
+                                                            <div class="col"><h5 class="font-weight-bold">${category.user.firstname} ${category.user.lastname}</h5></div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-3"><h5>Store Name</h5></div>
+                                                            <div class="col">
+                                                                <h5 class="font-weight-bold">
+                                                                    ${category.user.store_name}
+                                                                    ${category.user.user_status === 1 ? `<i class="text-success mdi mdi-check-circle" title="Approved"></i>` : `<i class="text-danger mdi mdi-close-circle" title="Suspended"></i>`}
+                                                                </h5>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-3"><h5>Email</h5></div>
+                                                            <div class="col"><h5 class="font-weight-bold">${category.user.email}</h5></div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-3"><h5>Phone</h5></div>
+                                                            <div class="col"><h5 class="font-weight-bold">${category.user.tel}</h5></div>
+                                                        </div>
+                                                        <div class="row ${category.user.country === null ? 'd-none' : ''}">
+                                                            <div class="col-3"><h5>Country</h5></div>
+                                                            <div class="col"><h5 class="font-weight-bold">${category.user.country}</h5></div>
+                                                        </div>
+                                                        <div class="row ${category.user.address === null ? 'd-none' : '' }">
+                                                            <div class="col-3"><h5>Address</h5></div>
+                                                            <div class="col"><h5 class="font-weight-bold">${category.user.address}, ${category.user.state}</h5></div>
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            }
+
+                                adminModalHtml += `
+                                            <div class="mt-3">
+                                                <h5><i class="mdi mdi-pencil-circle"></i> Update ${category.title}</h5>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="">Title *</label>
+                                                <input type="text" name="title" class="form-control" placeholder="Enter Title" value="${category.title}"/>
+                                            </div>
+
+                                            <div class="form-group dropdown">
+                                                <label for="">Subcategory <span class="badge badge-dark">${subcategory === null ? '' : subcategory.title}</span></label>
+                                                <select name="subcat_id" class="form-control loadCat">
+                                                    <option value="" disabled selected>--Select--</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="">Description *</label>
+                                                <textarea name="desc_text" class="form-control" rows="5"
+                                                    placeholder="Enter Description">${category.desc_text}</textarea>
+                                            </div>                                                          
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                        
+                                    </form>
+                                    
+                                </div>
+                                </div>
+                            </div>
+                        `;
+
+                            });
+                            $("#admins").html(html);
+                            $("#vendorsTable").html(vendorHtml);
+                            $("#adminModal").html(adminModalHtml);
+                            $(".loadCat").append(categoriesHtml);
+
+                        }
+                    }
+
+                })
+                .catch(err => {
+                    feedback_message('danger', err);
+                });
+        });
+
+
+
+        // Create Category
+        $(document).on("submit", "#createCategory", function (e) {
+
+            const formdata = $(this).serialize();
+
+            NProgress.start();
+
+            // feedback_message('warning', "Processing... Please wait.");
+            axios.post(`${process.env.CAT_API_ROUTE}category`, formdata, {
+                headers: {
+                    'Authorization': '<%= user.login_token %>',
+                }
+            })
+                .then(response => {
+                    const { data } = response;
+                    NProgress.done();
+
+                    if (data.error === 0) {
+                        feedback_message('success', data.msg);
+                        swal({
+                            title: data.msg,
+                            icon: "success",
+                            button: "Ok!",
+                        });
+                        window.location = window.location.origin + window.location.pathname;
+
+                    } else {
+                        // feedback_message('danger', data.msg);
+                        swal({
+                            title: data.msg.replace("_", " ").replace("_", " "),
+                            icon: "error",
+                            button: "Ok!",
+                        });
+                    }
+
+                })
+                .catch(err => {
+                    feedback_message('danger', err);
+                });
+
+            e.preventDefault();
+
+        });
+
+        function showAdminDropdown(id) {
+            $(`#${id}`).toggle();
+            $(`.manipulateDrop[id!='${id}']`).hide();
+        }
+
+        function vetCat(cat_no, cat_status) {
+
+            NProgress.start();
+            axios.put(`${process.env.CAT_API_ROUTE}category/${cat_no}`, { cat_status }, {
+                headers: {
+                    'Authorization': '<%= user.login_token %>',
+                }
+            })
+                .then(response => {
+                    const { data } = response;
+
+                    if (data.error === 0) {
+                        NProgress.done();
+                        swal({
+                            title: data.msg,
+                            icon: "success",
+                            button: "Ok!",
+                        });
+                        window.location = window.location.origin + window.location.pathname;
+
+                    } else {
+                        feedback_message('danger', data.msg);
+                    }
+
+                })
+                .catch(err => {
+                    feedback_message('danger', err);
+                });
+
+            e.preventDefault();
+        }
+
+        function removeCat(cat_no) {
+
+            NProgress.start();
+            axios.delete(`${process.env.CAT_API_ROUTE}category/${cat_no}`, {
+                headers: {
+                    'Authorization': '<%= user.login_token %>',
+                }
+            })
+                .then(response => {
+                    const { data } = response;
+
+                    if (data.error === 0) {
+                        NProgress.done();
+                        swal({
+                            title: data.msg,
+                            icon: "success",
+                            button: "Ok!",
+                        });
+                        window.location = window.location.origin + window.location.pathname;
+
+                    } else {
+                        feedback_message('danger', data.msg);
+                    }
+
+                })
+                .catch(err => {
+                    feedback_message('danger', err);
+                });
+
+            e.preventDefault();
+        }
+
+        $(document).on("submit", "#adminControl", function (e) {
+            const formdata = $(this).serialize();
+            NProgress.start();
+
+            axios.post(`${process.env.CAT_API_ROUTE}categories`, formdata, {
+                headers: {
+                    'Authorization': '<%= user.login_token %>',
+                }
+            })
+                .then(response => {
+                    const { data } = response;
+                    NProgress.done();
+
+                    if (data.error === 0) {
+                        NProgress.done();
+                        swal({
+                            title: data.msg,
+                            icon: "success",
+                            button: "Ok!",
+                        });
+                        window.location = window.location.origin + window.location.pathname;
+
+                    } else {
+                        feedback_message('danger', data.msg);
+                    }
+
+                })
+                .catch(err => {
+                    feedback_message('danger', err);
+                });
+
+            e.preventDefault();
+        });
+
+
+        const adminUpdateModal = (cat_no) => {
+
+            $(document).on("submit", "#updateAdmin", function (e) {
+                const formdata = $(this).serialize();
+                NProgress.start();
+
+                axios.put(`${process.env.CAT_API_ROUTE}category/${cat_no}`, formdata, {
+                    headers: {
+                        'Authorization': '<%= user.login_token %>',
+                    }
+                })
+                    .then(response => {
+                        const { data } = response;
+                        NProgress.done();
+
+                        if (data.error === 0) {
+                            NProgress.done();
+                            swal({
+                                title: data.msg,
+                                icon: "success",
+                                button: "Ok!",
+                            });
+                            window.location = window.location.origin + window.location.pathname;
+
+                        } else {
+                            // feedback_message('danger', data.msg);
+                            swal({
+                                title: data.msg.replace("_", " ").replace("_", " "),
+                                icon: "error",
+                                button: "Ok!",
+                            });
+                        }
+
+                    })
+                    .catch(err => {
+                        feedback_message('danger', err);
+                    });
+
+                e.preventDefault();
+            });
+
+        }
+
+
+    </script>

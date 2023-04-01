@@ -21,9 +21,9 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser()); 
 
 // Test DB Connection
-db.authenticate()
-    .then(() => console.log('Database connected!'))
-    .catch(err => console.log('Error: ' + err))
+// db.authenticate()
+//     .then(() => console.log('Database connected!'))
+//     .catch(err => console.log('Error: ' + err))
 
 
 // Offices.sync({force: true});

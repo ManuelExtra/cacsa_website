@@ -1,0 +1,135 @@
+
+
+<%- include("includes/header2") %> 
+  <% if(unit === 'teaching'){ %>  
+    <% name = 'Ogunfidodo Tobiloba Isaiah' %>
+    <% name2 = 'Job Roseline Adenike' %>
+    <% office = 'Bible Study Coordinator 2021/2022' %>
+    <% office2 = 'Sunday School Coordinator 2021/2022' %>
+    <% unit_img = bible_study_coord %>
+    <% unit_img2 = sunday_study_coord %>
+    <% content = `"This book of the law shall not depart out of thy mouth, but you shall meditate therein day and night, that thou mayest observe to do according to all that is written therein ..." - Joshua 1:8 KJV<br/>
+
+    This is a unit where priviledged teachers of the word came together to meditate and preview what will be talked upon whether Bible Study at every Wednesday at School Premises or at Sunday School on Sunday Services.<br/>
+    
+    Also, it helps in teaching a new convert on the word of God to grow up spiritually.
+    ` %>
+  
+  <% }else if(unit === 'evangelism'){ %>  
+    <% name = 'Ayelotan Abiodun John' %>
+    <% office = 'Evangelism Coordinator 2021/2022' %>
+    <% unit_img = evang_coord %>
+    <% content = `AS it is known that evengelism is the heart of the church,however,it is a mandate from our Lord Jesus Christ to the church to proclaim His mightiness to the world. This unit is known for preaching the gospel and its weekly meetings holds every Wednesday evening at the chapel and morning cry every Friday` %>
+
+  <% }else if(unit === 'pro'){ %>
+    <% unit = 'public relations' %>  
+    <% name = 'Olaleye Emmanuel Olanrewaju' %>
+    <% name2 = 'Kehinde Esther Damilola' %>
+    <% office = 'Public Relations Officer I 2021/2022' %>
+    <% office2 = 'Public Relations Officer II 2021/2022' %>
+    <% unit_img = pro1 %>
+    <% unit_img2 = pro2 %>
+    <% content = `This unit is the mouthpiece of the fellowship, the intermediary between the fellowship and the public at large. They are in charge of branding and creative works for the fellowship. They hold their meeting every Tuesdays of the week by 7pm.` %>
+
+  <% }else if(unit === 'welfare'){ %>
+    <% unit = 'organizing and welfare' %>   
+    <% name = 'Babatunde Stephen Adekunle' %>
+    <% name2 = 'Mufutau Bisola Azeezat' %>
+    <% name3 = 'Towolawi Esther Aderemi' %>
+    <% office = 'Male Organizing Coordinator 2021/2022' %>
+    <% office2 = 'Female Organizing Coordinator 2021/2022' %>
+    <% office3 = 'Welfare Coordinator 2021/2022' %>
+    <% unit_img = org_male %>
+    <% unit_img2 = org_female %>
+    <% unit_img3 = welfare_coord %>
+    <% content = `This unit takes charge of the welfarism and hospitality of the fellowship. It attends to the new comers of the fellowship.
+    <br/>
+    Also, it looks after the fellowship chapel and its properties. The unit usually make sure that the fellowship premises and the chapel are in good condition always.<br/>
+    The unit takes charge of ushering section.` %>
+  <% }else if(unit === 'prayer'){ %>
+    <% name = 'Ogunrinde Daniel Oluwaseyi' %>
+    <% office = 'Prayer Coordinator 2021/2022' %>
+    <% content = `The Prayer unit is a unit for the prayer warriors of CACSA FPI. Prayer Unit is the engine room of the fellowship, it is the gathering to communicate and dialog with God,cpmmitting the fellowship's activities,the members and academics to Him. The prayer unit's hold their meeting every Thursday by 6pm.` %>
+    <% unit_img = prayer_coord %>
+  <% }else if(unit === 'choir'){ %>
+    <% name = 'Olanrewaju Esther Iyanuoluwa' %>
+    <% office = 'Music Coordinator 2021/2022' %>
+    <% unit_img = choir_coord %>
+    <% content = `The Choir unit - Angelic Voices is a unit that preaches the word of God through songs. They minister in inspirational songs to race hearts to the throne of grace. Her rehearsals holds every Saturday Evening.` %>
+  <% }else if(unit === 'drama'){ %>
+    <% unit_img = drama_coord %>
+    <% name = 'Olanrewaju Promise Oluwasegun' %>
+    <% office = 'Drama Coordinator 2021/2022' %>
+    <% content = `The Drama unit - Calvary Presenters preaches the word of God in a form of playing which has blessed people's life. It reveals hidden things done in the spiritual realm by the wicked people of this world and proffer wayout.` %>
+  <% } %>
+  <% unit += ' unit' %> 
+
+
+  <div class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="lg:text-center text-center mb-5">
+        <p class="mt-2 display-5 font-semibold tracking-tight text-gray-900 sm:text-6xl">
+          <%= unit.toUpperCase() %> 
+        </p>        
+      </div>
+
+      <figure class="bg-gray-100 rounded-xl p-8">
+        <div class="row m-auto">
+          <div class="mb-2 <%= unit === 'public relations unit' || unit === 'teaching unit' ? 'col-md-6' : unit === 'organizing and welfare unit' ? 'col-md-4' : 'col-md-12' %>">
+            <img class="img-fluid mx-auto" src="/assets/images/<%= unit_img %>" alt="" style="width: 25em; height: 25em; object-fit: contain;">
+            <figcaption class="text-center mt-2">
+              <div>
+                <%= name %>
+              </div>
+              <div>
+                <%= office %>
+              </div>
+            </figcaption>
+          </div>
+          <% if (unit === 'public relations unit' || unit === 'teaching unit' || unit === 'organizing and welfare unit') { %>
+            <div class="mb-2 <%= unit === 'public relations unit' || unit === 'teaching unit' ? 'col-md-6' : 'col-md-4' %>">
+              <img class="img-fluid mx-auto" src="/assets/images/<%= unit_img2 %>" alt="" style="width: 25em; height: 25em; object-fit: cover;">
+              <figcaption class="text-center mt-2">
+                <div>
+                  <%= name2 %>
+                </div>
+                <div>
+                  <%= office2 %>
+                </div>
+              </figcaption>
+            </div>
+          <% } %>
+          <% if (unit === 'organizing and welfare unit') { %>
+            <div class="col-md-4">
+              <img class="img-fluid mx-auto" src="/assets/images/<%= unit_img3 %>" alt="" style="width: 25em; height: 25em; object-fit: cover;">
+              <figcaption class="text-center mt-2">
+                <div>
+                  <%= name3 %>
+                </div>
+                <div>
+                  <%= office3 %>
+                </div>
+              </figcaption>
+            </div>
+          <% } %>
+        </div>
+        <div class="pt-6 space-y-4 mt-3">
+          
+          <blockquote>
+            <p class="text-lg font-semibold text-center">
+              <%- content %>
+            </p>
+          </blockquote>
+
+          <div class="text-center d-none mt-4">
+            <a href="#" class="btn btn-dark">View predecessors <i class="mdi mdi-chevron-right"></i></a>
+          </div>
+        </div>
+      </figure>
+
+    </div>
+  </div>
+    
+<%- include("includes/footer") %> 
+
